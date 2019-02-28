@@ -86,6 +86,7 @@
       $("#search").on("click", function() {
         // clear the display
         $("#cards").empty();
+        $("#list").empty();
         var searchString = $("#ward").val();
         console.log(searchString);
         
@@ -142,10 +143,14 @@
 
 
             clone.removeClass("template")
+            
+            
 
 
             // insert into DOM
-            $("#cards").append(clone);
+            $("#list").append(clone);
+            
+            
 
           });
 
