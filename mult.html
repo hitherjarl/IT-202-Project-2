@@ -49,7 +49,7 @@
     Search page
       
     
-  <input type="text" id="ward" value="60607">
+  <input type="text" id="ward" value="36">
 <select id="status">
   <option></option>
   <option value="Completed">Completed</option>
@@ -63,6 +63,11 @@
 		<div class="card-body">
 			<h5 class="card-title">Card title</h5>
 			<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle1 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle2 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle3 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle4 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle5 mb-2 text-muted">Card subtitle</h6>
 			<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
 			<a href="#" class="card-link">Card link</a>
 			<a href="#" class="card-link">Another link</a>
@@ -78,7 +83,7 @@
       var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5";
 
 
-      $("#list").on("click", function() {
+      $("#search").on("click", function() {
         // clear the display
         $("#cards").empty();
         var searchString = $("#ward").val();
@@ -110,12 +115,22 @@
             clone.find(".card-title").text(v.street_address);
 
 
-
             clone.find(".card-title").addClass(v.status);
 
             clone.find(".card-title").attr("data-results", v.status);
 
             clone.find(".card-subtitle").text(v.service_request_number);
+
+            clone.find(".card-subtitle1").text(v.where_is_the_graffiti_located_);
+            
+            clone.find(".card-subtitle2").text(v.what_type_of_surface_is_the_graffiti_on_);
+
+            clone.find(".card-subtitle3").text(v.creation_date);
+
+            clone.find(".card-subtitle4").text(v.status);
+
+            clone.find(".card-subtitle5").text(v.completion_date);
+            
             
             if (v.violations) {
               //clone.find(".card-text").text(v.violations);
