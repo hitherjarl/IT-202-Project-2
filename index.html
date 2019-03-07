@@ -1,131 +1,36 @@
-<!DOCTYPE html>
-<html>
+function initMap() {
+  // The location of Uluru
+  var chicago = {lat: 41.8781, lng: -87.6298};
+  // The map, centered at Uluru
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 11, center: chicago});
 
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>repl.it</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-	 crossorigin="anonymous">
-	<style>
-		.template {
-			display: none;
-		}
-    .Pass {color: green;}
-    .Fail {color: red;}
-	</style>
+  $.get("https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5",
 
-</head>
-
-<body>
-
-  <input type="text" id="zip" value="60607">
-<select id="results">
-  <option></option>
-  <option value="Pass">Pass</option>
-  <option value="Fail">Fail</option>
-</select>
-  <button id="search">Search</button>
-
-  <div id="cards"></div>
-
-	<div class="card template" style="width: 18rem;">
-		<div class="card-body">
-			<h5 class="card-title">Card title</h5>
-			<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-			<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-			<a href="#" class="card-link">Card link</a>
-			<a href="#" class="card-link">Another link</a>
-		</div>
-	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">
-
-	</script>
-
-	<script>
-		$(document).ready(function(){
-
-      var endpoint = "https://data.cityofchicago.org/resource/cwig-ma7x.json?$limit=5";
-
-
-      $("#search").on("click", function() {
-        // clear the display
-        $("#cards").empty();
-        var searchString = $("#zip").val();
-        console.log(searchString);
-        
-        var url = endpoint + "&zip=" + searchString;
-        console.log(url);
-
-        var results = $("#results").val();
-        console.log(results);
-
-        url = url + "&results=" + results;
-        console.log(url);
-
-      $.get(url, function(response) {
-          console.log(response);
-
-          $("#cards").append("<h2>Your query returned " + response.length + " records.</h2>");
-
-
-          var data = response;
-
-          $.each(data, function(i,v){
-            //console.log(i,v);
-
-            // clone card
-            var clone = $(".template").clone();
-            // update values
-            clone.find(".card-title").text(v.dba_name);
-
-
-
-            clone.find(".card-title").addClass(v.results);
-
-            clone.find(".card-title").attr("data-results", v.results);
-
-            clone.find(".card-subtitle").text(v.facility_type);
-            
-            if (v.violations) {
-              //clone.find(".card-text").text(v.violations);
-            } else {
-              clone.find(".card-text").text("")
-            }
-            
-            
-
-
-            clone.removeClass("template")
-
-
-            // insert into DOM
-            $("#cards").append(clone);
-
-          });
-
-
-      })
-
+      function(response) {
+        console.log("in data callback");
+        var data = response;
+        createMarkers(map, data );
       });
 
+}
 
+  function createMarkers (map, data) {
+    console.log(data);
+    $.each(data, function(i,v) {
 
+      var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
+      
+      var marker = new google.maps.Marker({position: location, map: map});
 
+      var infowindow = new google.maps.InfoWindow({
+        content: v.street_address
+      });
+
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
 
     });
-	</script>
 
-
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-	 crossorigin="anonymous">
-
-	</script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-	 crossorigin="anonymous">
-
-	</script>
-</body>
-
-</html>
+  }

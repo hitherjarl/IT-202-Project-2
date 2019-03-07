@@ -20,6 +20,17 @@
 		}
     .Pass {color: green;}
     .Fail {color: red;}
+    
+     /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    
+    .nav-link{
+      
+      font-size: 20px;
+    }
         
 	</style>
 
@@ -40,7 +51,10 @@
         <a class="nav-link" href="#list">List</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#map">Map</a>
+        <a class="nav-link" href="#mapper">Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#about">About</a>
       </li>
     </ul>
   </div>
@@ -59,7 +73,7 @@
 
   <div id="cards"></div>
 
-	<div class="card template" style="width: 18rem;">
+	<div class="card template" style="width: 65rem; "  align="center">
 		<div class="card-body">
 			<h5 class="card-title">Card title</h5>
 			<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
@@ -77,10 +91,27 @@
 
 	</script>
 
-	<script>
+	<script >
+    
+    var url;
+    var data;
+    var test;
+    
+     function initMap() {
+          // The location of Uluru
+          var chicago = {lat: 41.8781, lng: -87.6298};
+          // The map, centered at Uluru
+          var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 11, center: chicago});
+
+          
+
+            
+    
 		$(document).ready(function(){
 
       var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5";
+      
 
 
       $("#search").on("click", function() {
@@ -90,7 +121,7 @@
         var searchString = $("#ward").val();
         console.log(searchString);
         
-        var url = endpoint + "&ward=" + searchString;
+        url = endpoint + "&ward=" + searchString;
         console.log(url);
 
         var status = $("#status").val();
@@ -98,14 +129,16 @@
 
         url = url + "&status=" + status;
         console.log(url);
+       
 
       $.get(url, function(response) {
           console.log(response);
 
-          $("#cards").append("<h2>Your query returned " + response.length + " records.</h2>");
-
-
+          $("#cards").append("<h2>Your query returned " + response.length + " records in the List page.</h2>");
+        
           var data = response;
+          
+          createMarkers(map, data );
 
           $.each(data, function(i,v){
             //console.log(i,v);
@@ -164,6 +197,31 @@
 
 
     });
+       
+       
+     }
+    
+    function createMarkers (map, data) {
+    console.log(data);
+    $.each(data, function(i,v) {
+
+      var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
+      
+      var marker = new google.maps.Marker({position: location, map: map});
+
+      var infowindow = new google.maps.InfoWindow({
+        content: v.street_address
+      });
+
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+
+    });
+
+  }
+    
+    
 	</script>
 
 
@@ -181,15 +239,48 @@
   <div class="content" id="list">
     List page
   </div>
-  <div class="content" id="map">
+  <div class="content" id="mapper">
     Map page
+    
+    <h3> My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+    // Initialize and add the map
+    // 
+
+      
+      
+    
+      
+      
+    
+      
+
+
+
+    </script>
+    
+    
+  </div>
+  <div class="content" id="about">
+    About page
+    
+    
+    
   </div>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
       
-
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa4dMSOASs_iLQnhrPoQ8EZgj2Im_pZ7o&callback=initMap">
+    </script>
+  
     <script>
       $(document).ready(function() {
 
