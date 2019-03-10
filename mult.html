@@ -31,6 +31,11 @@
       
       font-size: 20px;
     }
+    
+    #list {
+      width: 100%;
+      height: 100%;
+      }
         
 	</style>
 
@@ -38,30 +43,37 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="#">Navbar</a>
+		<a class="navbar-brand" href="#">Hieroglyphics</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
     </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="#search">Search <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#list">List</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#mapper">Map</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#about">About</a>
-      </li>
-    </ul>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#search" role="tab" aria-controls="home" aria-selected="true">Search</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list" role="tab" aria-controls="profile" aria-selected="false">List</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#mapper" role="tab" aria-controls="contact" aria-selected="false">Google Map</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="about-tab" data-toggle="tab" href="#abouts" role="tab" aria-controls="about" aria-selected="false">About Us</a>
+  </li>
+</ul>
+    </div>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"></div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"></div>
+  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab"></div>
+  <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab"></div>
   </div>
-  </nav>
+    </nav>
   <div class="content" id="search">
     Search page
-      
+    <br>
+    Enter Ward number and Open/Complete to search
     
   <input type="text" id="ward" value="36">
 <select id="status">
@@ -75,7 +87,7 @@
 
 	<div class="card template" style="width: 65rem; "  align="center">
 		<div class="card-body">
-			<h5 class="card-title">Card title</h5>
+			<span class="card-title">Card title</span>
 			<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
       <h6 class="card-subtitle1 mb-2 text-muted">Card subtitle</h6>
       <h6 class="card-subtitle2 mb-2 text-muted">Card subtitle</h6>
@@ -97,6 +109,9 @@
     var data;
     var test;
     
+    
+    
+    
      function initMap() {
           // The location of Uluru
           var chicago = {lat: 41.8781, lng: -87.6298};
@@ -104,10 +119,6 @@
           var map = new google.maps.Map(
               document.getElementById('map'), {zoom: 11, center: chicago});
 
-          
-
-            
-    
 		$(document).ready(function(){
 
       var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5";
@@ -118,6 +129,8 @@
         // clear the display
         $("#cards").empty();
         $("#list").empty();
+        
+        
         var searchString = $("#ward").val();
         console.log(searchString);
         
@@ -164,14 +177,7 @@
             clone.find(".card-subtitle4").text(v.status);
 
             clone.find(".card-subtitle5").text(v.completion_date);
-            
-            
-            if (v.violations) {
-              //clone.find(".card-text").text(v.violations);
-            } else {
-              clone.find(".card-text").text("")
-            }
-            
+
             
 
 
@@ -195,19 +201,25 @@
 
 
 
-
+    
     });
+       
        
        
      }
     
     function createMarkers (map, data) {
     console.log(data);
+    
     $.each(data, function(i,v) {
+      
+      
 
       var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
       
       var marker = new google.maps.Marker({position: location, map: map});
+      
+      $("#search").on("click", function() { marker.setMap(null); });
 
       var infowindow = new google.maps.InfoWindow({
         content: v.street_address
@@ -242,33 +254,39 @@
   <div class="content" id="mapper">
     Map page
     
-    <h3> My Google Maps Demo</h3>
+    <h3> Grafetti Locations</h3>
     <!--The div element for the map -->
     <div id="map"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-    <script>
-    // Initialize and add the map
-    // 
-
-      
-      
-    
-      
-      
-    
-      
-
-
-
-    </script>
     
     
   </div>
-  <div class="content" id="about">
-    About page
+  <div class="content" id="abouts">
+    About Page
     
+    <div class="list-group">
+      <a href="#abut" class="list-group-item list-group-item-action">About</a>
+      <a href="#dev" class="list-group-item list-group-item-action">Developer</a>
+      <a href="#git" class="list-group-item list-group-item-action">Github Repo Link </a>
+    </div>
+    
+    
+    <div id="abut">
+      <h1> About </h1><br>
+      <h5> Welcome to Hieroglyphics! This app was built solely to allow a person to view the data regarding a certain graffiti located in Chicago.
+            The app will look for either open or completed graffiti works. Open simply means that the graffiti is still in place
+            while the complete means that graffiti was covered up. Make sure to know which ward needs to be searched first!</h5>
+    </div>
+    <div  id="dev"><br><br><br><br><br><br><br><br>
+      <h1> Developer </h1><br>
+      <h5>Mohamed Imran Mohamed Siddique</h5>
+    </div>
+    <div id="git"><br><br><br><br><br><br><br><br>
+      <div> <h1> Github Repo </h1><br>
+        <h5>https://github.com/isiddi5/IT-202-Project-2</h5>
+      </div>
+    </div>
     
     
   </div>
