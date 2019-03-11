@@ -248,15 +248,18 @@
       var marker = new google.maps.Marker({
         position: location, 
         map: map,
-        icon: colos
+        icon: colos,
+        animation: google.maps.Animation.DROP
       });
+      
+      var contentstring = v.street_address + '<br>' + v.service_request_number + '<br>' + v.where_is_the_graffiti_located_ + '<br>' + v.what_type_of_surface_is_the_graffiti_on_ + '<br>' + v.creation_date + '<br>' + v.status + '<br>' + v.completion_date;
       
       
 
       $("#search").on("click", function() { marker.setMap(null); });
 
       var infowindow = new google.maps.InfoWindow({
-        content: v.street_address
+        content: contentstring
       });
       
       
@@ -274,7 +277,7 @@
 
       });
       
-      //document.getElementById('maper').innerHTML = "Click me: " + counter;
+
       
       
       
