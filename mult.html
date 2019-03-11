@@ -34,6 +34,8 @@
       width: 100%;
       height: 100%;
       }
+    
+    
         
 	</style>
 
@@ -91,8 +93,7 @@
       <h6 class="card-subtitle2 mb-2 text-muted">Card subtitle</h6>
       <h6 class="card-subtitle3 mb-2 text-muted">Card subtitle</h6>
       <h6 class="card-subtitle4 mb-2 text-muted">Card subtitle</h6>
-      <h6 class="card-subtitle5 mb-2 text-muted">Card subtitle</h6>
-			<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <h6 class="card-subtitle5 mb-2 text-muted">Status is open so completion date is not available.</h6>
 			<a href="#" class="card-link">Card link</a>
 			<a href="#" class="card-link">Another link</a>
 		</div>
@@ -119,7 +120,7 @@
 
 		$(document).ready(function(){
 
-      var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5";
+      var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=50";
       
 
 
@@ -137,9 +138,10 @@
 
         var status = $("#status").val();
         console.log(status);
-
-        url = url + "&status=" + status;
-        console.log(url);
+        
+        if ((status == "Open") || (status == "Completed")){
+          url = url + "&status=" + status;
+        console.log(url);}
        
 
       $.get(url, function(response) {
