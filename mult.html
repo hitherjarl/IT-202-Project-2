@@ -233,7 +233,7 @@
     
     $.each(data, function(i,v) {
       
-      
+      var counter = 0;
 
       var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
       
@@ -259,14 +259,23 @@
         content: v.street_address
       });
       
-
+      
 
       marker.addListener('click', function() {
         infowindow.open(map, marker);
         
+        counter++;
+        console.log(counter);
         
+        if (counter >= 2){
+          infowindow.close(map, marker);
+          counter = 0;
+        }
 
       });
+      
+      //document.getElementById('maper').innerHTML = "Click me: " + counter;
+      
       
       
 
