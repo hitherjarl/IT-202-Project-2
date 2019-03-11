@@ -18,8 +18,6 @@
         .template {
 			display: none;
 		}
-    .Pass {color: green;}
-    .Fail {color: red;}
     
      /* Set the size of the div element that contains the map */
       #map {
@@ -217,17 +215,38 @@
 
       var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
       
-      var marker = new google.maps.Marker({position: location, map: map});
+      var completecolor = { url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }
+      var opencolor = { url: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png" }
       
+      var colos;
+      
+      if (v.status == "Open"){colos = opencolor} else {colos = completecolor}
+      
+      
+      var marker = new google.maps.Marker({
+        position: location, 
+        map: map,
+        icon: colos
+      });
+      
+      
+
       $("#search").on("click", function() { marker.setMap(null); });
 
       var infowindow = new google.maps.InfoWindow({
         content: v.street_address
       });
+      
+
 
       marker.addListener('click', function() {
         infowindow.open(map, marker);
+        
+        
+
       });
+      
+      
 
     });
 
