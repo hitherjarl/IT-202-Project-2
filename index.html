@@ -1,36 +1,404 @@
-function initMap() {
-  // The location of Uluru
-  var chicago = {lat: 41.8781, lng: -87.6298};
-  // The map, centered at Uluru
-  var map = new google.maps.Map(
-      document.getElementById('map'), {zoom: 11, center: chicago});
+<!DOCTYPE html>
+<html>
 
-  $.get("https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=5",
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>3 screen app</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	 crossorigin="anonymous">
 
-      function(response) {
-        console.log("in data callback");
-        var data = response;
-        createMarkers(map, data );
-      });
 
+	<style>
+		.content {
+			margin: auto;
+  width: 60%;
+
+  padding: 10px;
+      display: none;
+		}
+        
+        .template {
+			display: none;
+		}
+    
+     /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    
+    .nav-link{
+      
+      font-size: 20px;
+    }
+    
+    #list {
+      width: 100%;
+      height: 100%;
+      }
+    
+    #myBtn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: black;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 4px;
 }
 
-  function createMarkers (map, data) {
+#myBtn:hover {
+  background-color: #555;
+}
+    
+    
+        
+	</style>
+
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Hieroglyphics</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#search" role="tab" aria-controls="home" aria-selected="true">Search</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list" role="tab" aria-controls="profile" aria-selected="false">List</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#mapper" role="tab" aria-controls="contact" aria-selected="false">Google Map</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="about-tab" data-toggle="tab" href="#abouts" role="tab" aria-controls="about" aria-selected="false">About Us</a>
+  </li>
+</ul>
+    </div>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab"></div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab"></div>
+  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab"></div>
+  <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab"></div>
+  </div>
+    </nav>
+  <div class="content" id="search">
+    Search page
+    <br>
+    Enter Ward number and Open/Complete to search
+    
+  <input type="text" id="ward" value="36">
+<select id="status">
+  <option></option>
+  <option value="Completed">Completed</option>
+  <option value="Open">Open</option>
+</select>
+  <button id="search">Search</button>
+
+  <div id="cards"></div>
+
+	<div class="card template"  align="center">
+		<div class="card-body">
+			<span class="card-title">Card title</span>
+			<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle1 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle2 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle3 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle4 mb-2 text-muted">Card subtitle</h6>
+      <h6 class="card-subtitle5 mb-2 text-muted">Status is open so completion date is not available.</h6>
+			<a href="#" class="card-link">Card link</a>
+			<a href="#" class="card-link">Another link</a>
+		</div>
+	</div>
+    </div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+
+	</script>
+
+	<script >
+    
+    var url;
+    var data;
+    var test;
+    
+    
+    
+    
+     function initMap() {
+          // The location of Uluru
+          var chicago = {lat: 41.8781, lng: -87.6298};
+          // The map, centered at Uluru
+          var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 11, center: chicago});
+
+		$(document).ready(function(){
+
+      var endpoint = "https://data.cityofchicago.org/resource/cdmx-wzbz.json?$limit=50";
+      
+
+
+      $("#search").on("click", function() {
+        // clear the display
+        $("#cards").empty();
+        $("#list").empty();
+        
+        
+        var searchString = $("#ward").val();
+        console.log(searchString);
+        
+        url = endpoint + "&ward=" + searchString;
+        console.log(url);
+
+        var status = $("#status").val();
+        console.log(status);
+        
+        if ((status == "Open") || (status == "Completed")){
+          url = url + "&status=" + status;
+        console.log(url);}
+       
+
+      $.get(url, function(response) {
+          console.log(response);
+
+          $("#cards").append("<h2>Your query returned " + response.length + " records in the List page.</h2>");
+        
+          var data = response;
+          
+          createMarkers(map, data );
+
+          $.each(data, function(i,v){
+            //console.log(i,v);
+
+            // clone card
+            var clone = $(".template").clone();
+            // update values
+            clone.find(".card-title").text(v.street_address);
+
+
+            clone.find(".card-title").addClass(v.status);
+
+            clone.find(".card-title").attr("data-results", v.status);
+
+            clone.find(".card-subtitle").text(v.service_request_number);
+
+            clone.find(".card-subtitle1").text(v.where_is_the_graffiti_located_);
+            
+            clone.find(".card-subtitle2").text(v.what_type_of_surface_is_the_graffiti_on_);
+
+            clone.find(".card-subtitle3").text(v.creation_date);
+
+            clone.find(".card-subtitle4").text(v.status);
+
+            clone.find(".card-subtitle5").text(v.completion_date);
+
+            
+
+
+            clone.removeClass("template")
+            
+            
+
+
+            // insert into DOM
+            $("#list").append(clone);
+            
+            
+
+          });
+
+
+      })
+
+      });
+
+
+
+
+    
+    });
+       
+       
+       
+     }
+    
+    function createMarkers (map, data) {
     console.log(data);
+    
     $.each(data, function(i,v) {
+      
+      var counter = 0;
 
       var location = {lat: parseFloat(v.latitude), lng: parseFloat(v.longitude) }
       
-      var marker = new google.maps.Marker({position: location, map: map});
+      var completecolor = { url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png" }
+      var opencolor = { url: "http://maps.google.com/mapfiles/ms/icons/pink-dot.png" }
+      
+      var colos;
+      
+      if (v.status == "Open"){colos = opencolor} else {colos = completecolor}
+      
+      
+      var marker = new google.maps.Marker({
+        position: location, 
+        map: map,
+        icon: colos,
+        animation: google.maps.Animation.DROP
+      });
+      
+      var contentstring = v.street_address + '<br>' + v.service_request_number + '<br>' + v.where_is_the_graffiti_located_ + '<br>' + v.what_type_of_surface_is_the_graffiti_on_ + '<br>' + v.creation_date + '<br>' + v.status + '<br>' + v.completion_date;
+      
+      
+
+      $("#search").on("click", function() { marker.setMap(null); });
 
       var infowindow = new google.maps.InfoWindow({
-        content: v.street_address
+        content: contentstring
       });
+      
+      
 
       marker.addListener('click', function() {
         infowindow.open(map, marker);
+        
+        counter++;
+        console.log(counter);
+        
+        if (counter >= 2){
+          infowindow.close(map, marker);
+          counter = 0;
+        }
+
       });
+      
+
+      
+      
+      
 
     });
 
   }
+    
+    
+	</script>
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+	 crossorigin="anonymous">
+
+	</script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+	 crossorigin="anonymous">
+
+	</script>  
+      
+  
+  <div class="content" id="list">
+    
+    List page
+    
+  </div>
+  <div class="content" id="mapper">
+    Map page
+    
+    <h3> Grafetti Locations</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    
+  </div>
+  <div class="content" id="abouts">
+    About Page
+    <div id="top"></div>
+    
+    <div class="list-group">
+      <a href="#abut" class="list-group-item list-group-item-action">About</a>
+      <a href="#dev" class="list-group-item list-group-item-action">Developer</a>
+      <a href="#git" class="list-group-item list-group-item-action">Github Repo Link </a>
+    </div>
+    
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+    
+    
+    <div id="abut">
+      <h1> About </h1><br>
+      <h5> Welcome to Hieroglyphics! This app was built solely to allow a person to view the data regarding a certain graffiti located in Chicago.
+            The app will look for either open or completed graffiti works. Open simply means that the graffiti is still in place
+            while the complete means that graffiti was covered up. Make sure to know which ward needs to be searched first!</h5>
+    </div>
+    <div  id="dev"><br><br><br><br><br><br><br><br>
+      <h1> Developer </h1><br>
+      <h5>Mohamed Imran Mohamed Siddique</h5>
+      <h5>E-mail: isiddi5@uic.edu</h5>
+      <h5>UIN: 656951860</h5>
+    </div>
+    <div id="git"><br><br><br><br><br><br><br><br>
+      <div> <h1> Github Repo </h1><br>
+        <h5>https://github.com/isiddi5/IT-202-Project-2</h5>
+      </div>
+    </div>
+    
+    
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+      
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDa4dMSOASs_iLQnhrPoQ8EZgj2Im_pZ7o&callback=initMap">
+    </script>
+  
+  <script>
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    document.getElementById("myBtn").style.display = "block";
+  } else {
+    document.getElementById("myBtn").style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
+</script>
+
+  
+    <script>
+      $(document).ready(function() {
+
+        function hideScreens() {
+          $(".content").hide();
+        }
+
+        $(".nav-link").on("click", function(){
+          hideScreens();
+          var target = $(this).attr("href");
+          $(target).show();
+        });
+
+      });
+    </script>
+
+
+  </body>
+</html>
